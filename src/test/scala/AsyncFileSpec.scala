@@ -13,24 +13,26 @@ import play.api.libs.iteratee._
 import play2.tools.iteratee._
 import scala.concurrent.Await._
 
+import scala.concurrent.util.Duration
+
 import play2.tools.file.DefaultImplicits._
 
 class AsyncFileSpec extends Specification {
   "AsyncFile" should {
 
-    "read file" in {
+    /*"read file" in {
       val f = FileChannel("/Volumes/PVO/workspaces/workspace_mandubian/play2-async-nio/src/test/resources/test.txt").open
       f.error must beNone
-      await(
+      result(
         f.enumerate().split("\n").stringify.toList.map( _ must containAllOf( List("alpha", "beta", "gamma", "delta") )),
-        1000
+        Duration(1000, "millis")
       )
     }
 
     "read file, split by lines, subsplit in each line" in {
       val f = FileChannel("/Volumes/PVO/workspaces/workspace_mandubian/play2-async-nio/src/test/resources/test2.txt").open
       f.error must beNone
-      await(
+      result(
         f.enumerate().stringify.split("\n").subsplit[List](",").toList.map( _ must containAllOf( 
           List(
             List("alpha","alpha1","alpha2"), 
@@ -38,7 +40,7 @@ class AsyncFileSpec extends Specification {
             List("gamma","gamma1","gamma2")
           )
         )),
-        1000
+        Duration(1000, "millis")
       )
     }
 
@@ -60,41 +62,41 @@ class AsyncFileSpec extends Specification {
 
     "read file using withFile" in {
       FileChannel.withFile("/Volumes/PVO/workspaces/workspace_mandubian/play2-async-nio/src/test/resources/test.txt") { f =>
-        await(
+        result(
           f.enumerate().split("\n").stringify.toList.map( _ must containAllOf( List("alpha", "beta", "gamma", "delta") )),
-          1000
+          Duration(1000, "millis")
         )
       }
     }
 
     "write file with iteratee" in {
       FileChannel.withFile(FileChannel("/tmp/testwrite.txt").writing.create) { f =>
-        await(
+        result(
           RichEnumerator(Enumerator("test111", "test211", "test311")).mapTo[Array[Byte]] |>>> f.iteratee(),
-          1000
+          Duration(1000, "millis")
         )
 
-        await(
+        result(
           f.enumerate().stringify.traverse[List].map{ _ must containAllOf(List("test111test211test311")) },
-          1000
+          Duration(1000, "millis")
         )
       }
-    }
+    }*/
 
-    /*"watch file modification" in {
+    "watch file modification" in {
       running(FakeApplication()){
         val watchActor = WatchActor()
         watchActor.start
-        watchActor.register(java.nio.file.Paths.get("/tmp/test"))
-        //await(RichEnumerator(watchActor.enumerator).stringify.split("\n") |>>> Iteratee.foreach{ t => println("RES:'%s'".format(t)) }, 30000)
+        watchActor.register(java.nio.file.Paths.get("/tmp/logs"))
+        await(RichEnumerator(watchActor.enumerator).stringify.split("\n") |>>> Iteratee.foreach{ t => println("RES:'%s'".format(t)) }, 30000)
 
-        println(
+        /*println(
           await(RichEnumerator(watchActor.enumerator).stringify.split("\n").toList, 10000)
-        )
+        )*/
         watchActor.stop
         success
       }
-    }*/
+    }
 
       //f2.enumerate().split("\n").stringify.subsplit[List](",").mapTo[List[String]].foreach(println(_))
 

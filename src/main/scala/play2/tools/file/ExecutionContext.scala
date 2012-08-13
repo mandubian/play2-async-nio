@@ -41,7 +41,7 @@ class FileExecutionContext(reporter: Throwable => Unit, min: Option[Int], num: O
   }
 
   def createExecutorService: ExecutorService = {
-
+    println("Creating ExecutionContext with thread(min:%s num:%s max:%s)".format(min, num, max))
     def range(floor: Int, desired: Int, ceiling: Int): Int =
       if (ceiling < floor) range(ceiling, desired, floor) else scala.math.min(scala.math.max(desired, floor), ceiling)
 
@@ -88,7 +88,8 @@ class FileExecutionContext(reporter: Throwable => Unit, min: Option[Int], num: O
     }
   }
 
-  def execute(runnable: Runnable): Unit = executor match {
+  def execute(runnable: Runnable): Unit = {
+    executor match {
     case fj: ForkJoinPool =>
       Thread.currentThread match {
         case fjw: ForkJoinWorkerThread if fjw.getPool eq fj =>
@@ -98,8 +99,9 @@ class FileExecutionContext(reporter: Throwable => Unit, min: Option[Int], num: O
           }).fork
         case _ => fj.execute(runnable)
       }
-    case generic => generic execute runnable
-  }
+    case generic => 
+      generic execute runnable
+  }}
 
   def reportFailure(t: Throwable) = reporter(t)
 }

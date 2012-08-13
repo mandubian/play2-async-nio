@@ -32,7 +32,7 @@ import java.util.List;
  * Base implementation class for watch keys.
  */
 
-abstract class AbstractWatchKey extends WatchKey {
+public abstract class AbstractWatchKey extends WatchKey {
 
     /**
      * Maximum size of event list (in the future this may be tunable)
@@ -93,7 +93,7 @@ abstract class AbstractWatchKey extends WatchKey {
      * @param context context
      */
     @SuppressWarnings("unchecked")
-    final void signalEvent(WatchEvent.Kind<?> kind, Object context) {
+    public final void signalEvent(WatchEvent.Kind<?> kind, Object context) {
         synchronized (this) {
             int size = events.size();
             if (size > 1) {

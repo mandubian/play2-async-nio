@@ -2,7 +2,7 @@ package com.barbarysoftware.watchservice;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-class MacOSXWatchKey extends AbstractWatchKey {
+public class MacOSXWatchKey extends AbstractWatchKey {
     private final AtomicBoolean cancelled = new AtomicBoolean(false);
     private final boolean reportCreateEvents;
     private final boolean reportModifyEvents;
