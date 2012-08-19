@@ -26,6 +26,9 @@ object MacWatchService {
   def apply(implicit executor: ExecutorService) = new MacWatchService(executor)
 }
 
+/**
+ * Scala implementation of JDK WatchService
+ */
 class MacWatchService(executor: ExecutorService) extends AbstractWatchService {
   
   class CarbonRunnable(stream: FSEventStreamRef) extends java.lang.Runnable {
