@@ -8,7 +8,11 @@ import scala.concurrent.util.Duration
 import scala.util.control.NonFatal
 import play.api.Configuration
 
-// just shamefully copying scala implementation and simplifying it :D
+
+/**
+ * Just shamefully copying scala ExecutionContext implementation based on ForkJoinPool 
+ * and simplifying it a bit for my purpose ;)
+ */
 class FileExecutionContext(reporter: Throwable => Unit, min: Option[Int], num: Option[Int], max: Option[Int]) extends ExecutionContextExecutor {
 
   lazy val executor: Executor = executorService

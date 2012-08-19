@@ -12,8 +12,6 @@ import scala.concurrent.ExecutionContext
 
 import play.api.Play.current
 
-import play2.tools.iteratee.RichEnumerator
-
 import play.api.{Application, Plugin, Logger, PlayException}
 
 /**
@@ -113,7 +111,7 @@ case object DefaultWatchActor extends WatchActor {
             // pushes to channel
             channel.map{ channel => 
               val pos = positions(path)
-              f.enumerateFrom(pos).foreach{ t: Array[Byte] => 
+              f.enumeratorFrom(pos) |>>> Iteratee.foreach{ t: Array[Byte] => 
                 positions += path -> (pos + t.size)
                 channel.push(t)
               } 
@@ -227,7 +225,7 @@ case object MacWatchActor extends WatchActor {
             println("Reading %s".format(path))
             channel.map{ channel => 
               val pos = positions(path)
-              f.enumerateFrom(pos).foreach{ t: Array[Byte] => 
+              f.enumeratorFrom(pos) |>>> Iteratee.foreach { t: Array[Byte] => 
                 positions += path -> (pos + t.size)
                 channel.push(t)
               } 

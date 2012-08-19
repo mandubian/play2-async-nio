@@ -12,6 +12,7 @@ import play2.tools.file._
 import play.api.libs.iteratee._
 import play2.tools.iteratee._
 import scala.concurrent.Await._
+import scala.concurrent.util.Duration
 import scala.util.parsing.combinator._
 
 import java.util.Date
@@ -67,11 +68,14 @@ class ParserSpec extends Specification {
     }*/
 
     "do it 2" in {
-      val f = FileChannel("/tmp/system.log").reading.open
+      val f = FileChannel("/tmp/system.log").reading.open()
 
-      println(await(
-        f.enumerate().split("\n").parseString(SysLogParser.apply).toList,
-        1000
+      println(result(
+        f.enumerator() 
+          .through(RichEnumeratee.split("\n")) 
+          .through(RichEnumeratee.parseString(SysLogParser.apply))
+          .run(RichIteratee.toList()),
+        Duration(1000, "millis")
       ))
 
       success

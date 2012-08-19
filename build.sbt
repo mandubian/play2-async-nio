@@ -4,11 +4,13 @@ organization := "play2.tools.nio"
 
 version := "0.1-SNAPSHOT"
 
+scalaVersion := "2.9.2"
+
 resolvers ++= Seq(
-	//"Typesafe repository snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
-	//"Typesafe repository releases" at "http://repo.typesafe.com/typesafe/releases/"
   "mandubian-mvn snapshots" at "https://github.com/mandubian/mandubian-mvn/raw/master/snapshots",
-  "mandubian-mvn releases" at "https://github.com/mandubian/mandubian-mvn/raw/master/releases"
+  "mandubian-mvn releases" at "https://github.com/mandubian/mandubian-mvn/raw/master/releases",
+  "Typesafe repository snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
+  "Typesafe repository releases" at "http://repo.typesafe.com/typesafe/releases/"
 )
 
 libraryDependencies ++= Seq(
