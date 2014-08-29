@@ -89,7 +89,7 @@ case object DefaultWatchActor extends WatchActor {
   override val enumerator = unicast[Array[Byte]](
     onStart = { c => channel = Some(c) },
     onComplete = { },
-    onError = { (s, e) => ()}
+    onError = { (s, e) => println("error:%s".format(e)) }
   )
 
   override def start(implicit ctx: ExecutionContext, ex: ExecutorService) = {
@@ -225,6 +225,7 @@ case object MacWatchActor extends WatchActor {
             println("Reading %s".format(path))
             channel.map{ channel => 
               val pos = positions(path)
+              println("Reading from position %d".format(pos))
               f.enumeratorFrom(pos) |>>> Iteratee.foreach { t: Array[Byte] => 
                 positions += path -> (pos + t.size)
                 channel.push(t)

@@ -30,10 +30,12 @@ object MacWatchService {
  * Scala implementation of JDK WatchService
  */
 class MacWatchService(executor: ExecutorService) extends AbstractWatchService {
+  var runnables: List[CarbonRunnable] = List()
   
-  class CarbonRunnable(stream: FSEventStreamRef) extends java.lang.Runnable {
+  class CarbonRunnable(_stream: FSEventStreamRef) extends java.lang.Runnable {
+    lazy val runLoop = CarbonAPI.INSTANCE.CFRunLoopGetCurrent()
+    lazy val stream = _stream
     override def run():Unit = {
-      val runLoop = CarbonAPI.INSTANCE.CFRunLoopGetCurrent()
       val runLoopMode = CFStringRef.toCFString("kCFRunLoopDefaultMode")
       CarbonAPI.INSTANCE.FSEventStreamScheduleWithRunLoop(stream, runLoop, runLoopMode)
       CarbonAPI.INSTANCE.FSEventStreamStart(stream)
@@ -68,7 +70,10 @@ class MacWatchService(executor: ExecutorService) extends AbstractWatchService {
       kFSEventStreamCreateFlagNoDefer
     )
 
-    executor.submit(new CarbonRunnable(stream))
+    val runnable = new CarbonRunnable(stream)
+    executor.submit(runnable)
+
+    runnables = runnables :+ runnable
 
     watchKey
   }
@@ -104,12 +109,18 @@ class MacWatchService(executor: ExecutorService) extends AbstractWatchService {
     }
 
     @throws(classOf[IOException])
-    def implClose(): Unit = {
+    override def implClose() = {
+      runnables.foreach { r =>
+        CarbonAPI.INSTANCE.CFRunLoopStop(r.runLoop)
+        CarbonAPI.INSTANCE.FSEventStreamStop(r.stream)
+      }
+      executor.shutdownNow()
+
         /*for (CFRunLoopThread thread : threadList) {
             CarbonAPI.INSTANCE.CFRunLoopStop(thread.getRunLoop());
             CarbonAPI.INSTANCE.FSEventStreamStop(thread.getStreamRef());
-        }
-        threadList.clear();
+        }*/
+        /*threadList.clear();
         callbackList.clear();*/
     }
 

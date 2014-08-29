@@ -139,7 +139,7 @@ public abstract class AbstractWatchService extends WatchService {
      * Closes this watch service. This method is invoked by the close
      * method to perform the actual work of closing the watch service.
      */
-    abstract void implClose() throws IOException;
+    protected abstract void implClose() throws IOException;
 
     @Override
     public final void close()
